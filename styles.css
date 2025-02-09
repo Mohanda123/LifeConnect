@@ -97,6 +97,7 @@ a:hover {
 .btn-primary {
     background-color: #00ffff;
     color: #121212;
+    
 }
 
 .btn-secondary {
@@ -189,7 +190,39 @@ footer {
     font-size: 20px;
 }
 
+/* Register Donor and Request Donation Pages */
+.register-donor, .request-donation {
+    padding: 60px 10%;
+    text-align: center;
+}
 
+.register-donor h2, .request-donation h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.register-donor form, .request-donation form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.register-donor input, .request-donation input,
+.register-donor select, .request-donation select,
+.register-donor textarea, .request-donation textarea {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #00ffff;
+    border-radius: 5px;
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.register-donor button, .request-donation button {
+    margin-top: 20px;
+}
 @media screen and (max-width: 600px) {
     /* Navbar */
     .navbar {
