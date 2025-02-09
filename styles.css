@@ -97,7 +97,7 @@ a:hover {
 .btn-primary {
     background-color: #00ffff;
     color: #121212;
-    
+
 }
 
 .btn-secondary {
@@ -222,6 +222,51 @@ footer {
 
 .register-donor button, .request-donation button {
     margin-top: 20px;
+}
+/* Blood Donation and Organ Donation Pages */
+.blood-hero, .organ-hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/blood-hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.organ-hero {
+    background-image: url('images/organ-hero-bg.jpg');
+}
+
+.blood-hero h1, .organ-hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.blood-hero p, .organ-hero p {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.blood-info, .organ-info {
+    padding: 60px 10%;
+    text-align: center;
+}
+
+.blood-info h2, .organ-info h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.blood-info ul, .organ-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.blood-info li, .organ-info li {
+    font-size: 18px;
+    margin: 10px 0;
 }
 @media screen and (max-width: 600px) {
     /* Navbar */
