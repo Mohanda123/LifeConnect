@@ -4,7 +4,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Roboto Mono", monospace;
+    font-family: 'Arial', sans-serif;;
 }
 
 .main {
@@ -141,4 +141,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+@media screen and (max-width: 600px) {
+
+.navbar {
+    flex-direction: column;
+    align-items: center;
+}
 }
