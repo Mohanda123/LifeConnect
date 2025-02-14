@@ -17,7 +17,28 @@
     align-items: center;
     justify-content: center;
 }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background-color: #1a1a1a;
+    position: sticky;
+    top: 0;
+    color: white;
+    z-index: 1000;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+}
 
+.logo i {
+    color: #00ffff;
+    margin-right: 10px;
+}
 .main .image-container {
     padding: 10px;
 }
