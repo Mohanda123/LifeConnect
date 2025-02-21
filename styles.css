@@ -379,6 +379,44 @@ footer {
     z-index: 2;
     display: none;
 }
+@media screen and (max-width: 768px) {
+    .register-container {
+        width: 80%;
+        margin: 20px auto;
+    }
+    .popup-box {
+        width: 80%;
+        left: 10%;
+        top: 10%;
+    }
+    .add-button {
+        bottom: 50px;
+        right: 15px;
+        font-size: 30px;
+        padding: 15px;
+    }
+   
+}
+
+@media screen and (max-width: 480px) {
+    .register-container {
+        width: 90%;
+        padding: 10px;
+    }
+    .popup-box {
+        width: 90%;
+        left: 5%;
+        padding: 20px;
+    }
+    .add-button {
+        bottom: 30px;
+        right: 10px;
+        font-size: 25px;
+        padding: 10px;
+    }
+    
+}
+
 
 @media screen and (max-width: 600px) {
     /* Navbar */
