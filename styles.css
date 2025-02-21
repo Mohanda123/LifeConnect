@@ -295,6 +295,90 @@ footer {
     transform: scale(1.1);
     background-color: #00b3b3;
 }
+/* Real-Time Alerts Section */
+.alerts {
+    padding: 60px 10%;
+    text-align: center;
+}
+
+.alerts h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.alerts p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+#notificationStatus {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #00ffff;
+}
+
+/*view-register-person*/
+.container{
+    padding: 10px;
+}
+.register-container{
+     padding: 15px;
+     width: 15%;
+     background-color: black;
+     border-radius: 20px;
+     margin: 30px;
+     display: inline-block;
+     vertical-align: top;
+}
+.register-container h2{
+    color: aqua;
+}
+.register-container button{
+    background-color: #00ffff;
+    color: black;
+    border-radius: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: none;
+}
+.add-button{
+    background-color: #00ffff;
+    color: black;
+    border-radius: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 40px;
+    border: none;
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+}
+.popup-overlay{
+    background-color: black;
+    opacity: 0.8;
+    position: fixed;
+    width: 100%;
+    height: 100vh;  
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: none;
+}
+.popup-box{
+    background-color: #00ffff;
+    width: 30%;
+    padding: 40px;
+    border-radius: 10px;
+    position: absolute;
+    top:20%;
+    left: 30%;
+    z-index: 2;
+    display: none;
+}
 
 @media screen and (max-width: 600px) {
     /* Navbar */

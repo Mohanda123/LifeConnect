@@ -5,52 +5,70 @@ const chatBox = document.getElementById("chat-box");
 const chatInput = document.getElementById("chat-input");
 const sendButton = document.getElementById("send-button");
 
+// Initialize Speech Synthesis
 function speak(text) {
     const text_speak = new SpeechSynthesisUtterance(text);
-    text_speak.rate = 1; 
-    text_speak.volume = 1; 
-    text_speak.pitch = 0.9;  
+    text_speak.rate = 1;
+    text_speak.volume = 1;
+    text_speak.pitch = 0.9;
+
     let voices = window.speechSynthesis.getVoices();
-    let selectedVoice = voices.find(voice => voice.name.toLowerCase().includes('male')); 
+    let selectedVoice = voices.find(voice => voice.name.toLowerCase().includes('male'));
+    
     if (selectedVoice) {
-        text_speak.voice = selectedVoice;  
+        text_speak.voice = selectedVoice;
     }
 
     window.speechSynthesis.speak(text_speak);
 }
 
+// Greet the user based on time
 function wishMe() {
-    const day = new Date();
-    const hour = day.getHours();
+    const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) speak("Good Morning ...");
     else if (hour >= 12 && hour < 17) speak("Good Afternoon ...");
     else speak("Good Evening ...");
 }
 
+// Load voices and initialize
 window.addEventListener('load', () => {
-    speak("initializing MediSync ...");
-    wishMe();
+    window.speechSynthesis.onvoiceschanged = () => {
+        console.log("Available Voices:", window.speechSynthesis.getVoices());
+        speak("Initializing MediSync ...");
+        wishMe();
+    };
 });
 
+// Initialize Speech Recognition
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 
 recognition.onresult = (event) => {
-    const currentIndex = event.resultIndex;
-    const transcript = event.results[currentIndex][0].transcript;
+    const transcript = event.results[event.resultIndex][0].transcript;
     content.textContent = transcript;
     takeCommand(transcript.toLowerCase());
 };
 
-btn.addEventListener('click', () => {
-    content.textContent = "Listening...";
-    recognition.start();
-});
+// Start listening
+if (btn) {
+    btn.addEventListener('click', () => {
+        content.textContent = "Listening...";
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error("Speech Recognition Error:", error);
+            content.textContent = "Error: Speech recognition not supported or permission denied.";
+        }
+    });
+}
 
-stopBtn.addEventListener('click', () => {
-    stopRecognition();
-    stopSpeech();
-});
+// Stop listening and speaking
+if (stopBtn) {
+    stopBtn.addEventListener('click', () => {
+        stopRecognition();
+        stopSpeech();
+    });
+}
 
 function stopRecognition() {
     recognition.stop();
@@ -62,21 +80,24 @@ function stopSpeech() {
     content.textContent = "Speech stopped.";
 }
 
+// Process user commands
 function takeCommand(message) {
+    console.log("User Command:", message);
+
     if (message.includes('hello') || message.includes('hi')) {
-        speak("Hello Itachi, How may I help you?");
+        speak("Hello Mohan, How may I help you?");
     } 
     else if (message.includes('bye') || message.includes('ok bye')){
         speak("See you, friend...I leave the rest...To you..");
     } 
     else if (message.includes('time')) {
-        const time = new Date().toLocaleString(undefined, { hour: "numeric", minute: "numeric" });
+        const time = new Date().toLocaleTimeString();
         const response = `The current time is ${time}.`;
         speak(response);
         appendMessage("Sushi", response);
     } 
     else if (message.includes('date')) {
-        const date = new Date().toLocaleString(undefined, { month: "short", day: "numeric" });
+        const date = new Date().toDateString();
         const response = `Today's date is ${date}.`;
         speak(response);
         appendMessage("Sushi", response);
@@ -99,87 +120,50 @@ function takeCommand(message) {
     } 
     else if (message.includes('open youtube')) {
         window.open("https://youtube.com", "_blank");
-        const response = "Opening YouTube...";
-        speak(response);
-        appendMessage("Sushi", response);
+        speak("Opening YouTube...");
     } 
     else if (message.includes('open whatsapp')) {
-        window.location.href = "whatsapp://";
-        const response = "Opening WhatsApp app...";
-        speak(response);
-        appendMessage("Sushi", response);
-    }
-    else if (message.includes('whatsapp chat')) {
-        const phoneNumber = message.match(/\d+/g).join('');
-        const whatsappURL = `whatsapp://send?phone=${phoneNumber}`;
-        window.location.href = whatsappURL;
-        const response = `Opening WhatsApp chat with ${phoneNumber}...`;
-        speak(response);
-        appendMessage("Sushi", response);
-    }
-    else if (message.includes('open visual studio code')) {
-        window.location.href = "vscode://";
-        const response = "Opening Visual Studio Code...";
-        speak(response);
-        appendMessage("Sushi", response);
+        window.open("https://web.whatsapp.com", "_blank");
+        speak("Opening WhatsApp...");
     } 
     else if (message.includes('open spotify')) {
-        window.location.href = "spotify://";
-        const response = "Opening Spotify...";
-        speak(response);
-        appendMessage("Sushi", response);
+        window.open("https://open.spotify.com", "_blank");
+        speak("Opening Spotify...");
     } 
-    else if (message.includes('open telegram')) {
-        window.location.href = "tg://";
-        const response = "Opening Telegram...";
-        speak(response);
-        appendMessage("Sushi", response);
-    } 
-    else if (message.includes('open linkedin')) {
-        window.open("https://www.linkedin.com", "_blank");
-        const response = "Opening LinkedIn...";
-        speak(response);
-        appendMessage("Sushi", response);
-    }
     else if (message.includes('open instagram')) {
         window.open("https://www.instagram.com", "_blank");
-        const response = "Opening Instagram...";
-        speak(response);
-        appendMessage("Sushi", response);
-    }
+        speak("Opening Instagram...");
+    } 
     else if (message.includes('wikipedia') || message.includes('what is') || message.includes('who is') || message.includes('define')) {
         const topic = message.replace(/wikipedia|what is|who is|define/g, "").trim();
         if (topic) {
             searchWikipedia(topic);
         } else {
-            speak("Please specify a topic you want to search for on Wikipedia.");
-            appendMessage("Sushi", "Please specify a topic you want to search for on Wikipedia.");
+            speak("Please specify a topic.");
         }
     } 
-
-    else if (message.includes('search google for') || message.includes('why') || message.includes('how')) {
+    else if (message.includes('search google for') || message.includes('why') || message.includes('how') || message.includes('which')) {
         const query = message.replace('search google for', '').trim();
         if (query) {
-            appendMessage("Sushi", `Searching  "${query}"...`);
             searchGoogle(query);
         } else {
             speak("Please specify what you want to search for.");
-            appendMessage("Sushi", "Please specify what you want to search for.");
         }
-    }
-    
-    
+    } 
     else {
-        const response = "I'm not sure about that. Can you ask something else?";
-        speak(response);
-        appendMessage("Sushi", response);
+        speak("I'm not sure about that. Can you ask something else?");
     }
 }
 
-sendButton.addEventListener("click", handleChatInput);
-chatInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") handleChatInput();
-});
+// Handle chat input
+if (sendButton) {
+    sendButton.addEventListener("click", handleChatInput);
+}
+if (chatInput) {
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleChatInput();
+    });
+}
 
 function handleChatInput() {
     const userMessage = chatInput.value.trim();
@@ -201,36 +185,44 @@ function processChat(message) {
     takeCommand(message.toLowerCase());
 }
 
+// Search Wikipedia
 function searchWikipedia(query) {
     const apiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+    
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Wikipedia API Error");
+            return response.json();
+        })
         .then(data => {
             if (data.extract) {
                 const result = data.extract;
                 speak(result);
                 appendMessage("Sushi", result);
             } else {
-                speak("I couldn't find anything on Wikipedia about that.");
-                appendMessage("Sushi", "I couldn't find anything on Wikipedia about that.");
+                speak("I couldn't find anything on Wikipedia.");
             }
         })
         .catch(error => {
-            speak("Sorry, there was an error while fetching the data.");
-            appendMessage("Sushi", "Sorry, there was an error while fetching the data.");
+            console.error("Wikipedia API Error:", error);
+            speak("Sorry, I couldn't fetch the information.");
         });
 }
 
+// Evaluate math expressions
 function evaluateExpression(expression) {
     try {
-        return eval(expression); 
+        return math.evaluate(expression); // Using math.js library
     } catch (error) {
+        console.error("Invalid Expression:", expression);
         return "Invalid expression";
     }
 }
+
+// Search Google
 async function searchGoogle(query) {
-    const apiKey = "AIzaSyArOJTL-AzZn0DccnNpCu2YTNX_KRUyC4s"; 
-    const cx = "052ccd7cfb6dc4fa1"; 
+    const apiKey = "AIzaSyArOJTL-AzZn0DccnNpCu2YTNX_KRUyC4s"; // Replace with your API key
+    const cx = "052ccd7cfb6dc4fa1"; // Replace with your CX
     const searchUrl = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cx}`;
 
     try {
@@ -239,20 +231,14 @@ async function searchGoogle(query) {
 
         if (data.items && data.items.length > 0) {
             const firstResult = data.items[0]; 
-            const title = firstResult.title;
-            const snippet = firstResult.snippet;
-            const link = firstResult.link;
-
-            const resultMessage = `${title}\n${snippet}\nRead more: ${link}`;
+            const resultMessage = `${firstResult.title}\n${firstResult.snippet}\nRead more: ${firstResult.link}`;
             speak(resultMessage);
             appendMessage("Sushi", resultMessage);
         } else {
             speak("No results found.");
-            appendMessage("Sushi", "No results found.");
         }
     } catch (error) {
-        speak("Sorry, I couldn't fetch the search results.");
-        appendMessage("Sushi", "Sorry, I couldn't fetch the search results.");
+        console.error("Google API Error:", error);
+        speak("Error fetching search results.");
     }
 }
-

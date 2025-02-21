@@ -8,8 +8,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 // Handle Donor Registration Form Submission
-document.getElementById('donorForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+document.getElementById('donorForm').addEventListener('submit', function () {
     const donorData = {
         fullName: document.getElementById('fullName').value,
         email: document.getElementById('email').value,
@@ -39,3 +38,5 @@ document.getElementById('requestForm').addEventListener('submit', function (e) {
     alert('Your request has been submitted!');
     // You can send this data to Firebase or a backend server here.
 });
+
+
