@@ -85,7 +85,7 @@ function takeCommand(message) {
     console.log("User Command:", message);
 
     if (message.includes('hello') || message.includes('hi')) {
-        speak("Hello Mohan, How may I help you?");
+        speak("Hello , How may I help you?");
     } 
     else if (message.includes('bye') || message.includes('ok bye')){
         speak("See you, friend...I leave the rest...To you..");
