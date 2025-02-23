@@ -1,86 +1,92 @@
-var popupoverlay = document.querySelector(".popup-overlay")
-var popupbox = document.querySelector(".popup-box")
-var addpopupbutton = document.getElementById("add-popup-button")
+// Popup Functionality
+var popupOverlay = document.querySelector(".popup-overlay");
+var popupBox = document.querySelector(".popup-box");
+var addPopupButton = document.getElementById("add-popup-button");
+var cancelPopup = document.getElementById("cancel-popup");
 
-addpopupbutton.addEventListener("click", function () {
-    popupoverlay.style.display = "block"
-    popupbox.style.display = "block"
-})
+addPopupButton.addEventListener("click", function () {
+    popupOverlay.style.display = "block";
+    popupBox.style.display = "block";
+});
 
-var cancelpopup = document.getElementById("cancel-popup")
-cancelpopup.addEventListener("click", function (event) {
-    event.preventDefault()
-    popupoverlay.style.display = "none"
-    popupbox.style.display = "none"
-})
+cancelPopup.addEventListener("click", function (event) {
+    event.preventDefault();
+    popupOverlay.style.display = "none";
+    popupBox.style.display = "none";
+});
 
-var container = document.querySelector(".container")
-var adddetails = document.getElementById("add-details")
-var nameinput = document.getElementById("name-input")
-var emailinput = document.getElementById("email-input")
-var phonenumberinput = document.getElementById("phonenumber-input")
-var bloodgroupinput = document.getElementById("bloodgroup-input")
-var locationinput = document.getElementById("location-input")
+// Form Elements
+var container = document.querySelector(".container");
+var addDetails = document.getElementById("add-details");
+var nameInput = document.getElementById("name-input");
+var emailInput = document.getElementById("email-input");
+var phoneNumberInput = document.getElementById("phonenumber-input");
+var bloodGroupInput = document.getElementById("bloodgroup-input");
+var locationInput = document.getElementById("location-input");
 
-// Function to add new details
-adddetails.addEventListener("click", function (event) {
-    event.preventDefault()
+// Function to Add User Details
+addDetails.addEventListener("click", function (event) {
+    event.preventDefault();
 
     var userData = {
-        name: nameinput.value,
-        email: emailinput.value,
-        phone: phonenumberinput.value,
-        bloodGroup: bloodgroupinput.value,
-        location: locationinput.value
-    }
+        name: nameInput.value,
+        email: emailInput.value,
+        phone: phoneNumberInput.value,
+        bloodGroup: bloodGroupInput.value,
+        location: locationInput.value
+    };
 
-    saveToLocalStorage(userData)
-    addUserCard(userData)
-    popupoverlay.style.display = "none"
-    popupbox.style.display = "none"
+    saveToLocalStorage(userData);
+    addUserCard(userData);
+    popupOverlay.style.display = "none";
+    popupBox.style.display = "none";
 
-    // Clear input fields after adding
-    nameinput.value = ""
-    emailinput.value = ""
-    phonenumberinput.value = ""
-    bloodgroupinput.value = ""
-    locationinput.value = ""
-})
+    // Clear Input Fields
+    nameInput.value = "";
+    emailInput.value = "";
+    phoneNumberInput.value = "";
+    bloodGroupInput.value = "";
+    locationInput.value = "";
+});
 
-// Function to display user details
+// Function to Display User Details
 function addUserCard(userData) {
-    var div = document.createElement("div")
-    div.setAttribute("class", "register-container")
-    div.innerHTML = `<h2>${userData.name}</h2>
+    var div = document.createElement("div");
+    div.setAttribute("class", "register-container");
+    div.innerHTML = `
+        <h2>${userData.name}</h2>
         <h5>${userData.email}</h5>
         <h5>${userData.phone}</h5>
         <h2>${userData.bloodGroup}</h2>
         <h5>${userData.location}</h5>
-        <button>Send</button>
-        <button onclick="deleteDetails(event, '${userData.phone}')">Delete</button>`
-    container.append(div)
+        <button onclick="sendMessage(event, '${userData.phone}', '${userData.email}', '${userData.name}', '${userData.bloodGroup}', '${userData.location}')">Send</button>
+        <button onclick="deleteDetails(event, '${userData.phone}')">Delete</button>
+    `;
+    container.append(div);
 }
 
-// Function to save details in Local Storage
+// Save Details to Local Storage
 function saveToLocalStorage(userData) {
-    var users = JSON.parse(localStorage.getItem("users")) || []
-    users.push(userData)
-    localStorage.setItem("users", JSON.stringify(users))
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+    users.push(userData);
+    localStorage.setItem("users", JSON.stringify(users));
 }
 
-// Function to load stored details on page load
+// Load Stored Details
 function loadFromLocalStorage() {
-    var users = JSON.parse(localStorage.getItem("users")) || []
-    users.forEach(user => addUserCard(user))
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+    users.forEach(user => addUserCard(user));
 }
 
-// Function to delete details from Local Storage
+// Delete User Details
 function deleteDetails(event, phone) {
-    event.target.parentElement.remove()
-    var users = JSON.parse(localStorage.getItem("users")) || []
-    users = users.filter(user => user.phone !== phone)
-    localStorage.setItem("users", JSON.stringify(users))
+    event.target.parentElement.remove();
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+    users = users.filter(user => user.phone !== phone);
+    localStorage.setItem("users", JSON.stringify(users));
 }
+
+// Send WhatsApp & Email Messages
 function sendMessage(event, phone, email, name, bloodGroup, location) {
     event.preventDefault();
 
@@ -94,7 +100,7 @@ function sendMessage(event, phone, email, name, bloodGroup, location) {
     var whatsappLink = `https://wa.me/${phone}?text=${whatsappMessage}`;
     window.open(whatsappLink, '_blank');
 
-    // Email Sending using mailto:
+    // Email Message
     var emailSubject = `Urgent Blood Donation Request`;
     var emailBody = `Dear ${name},%0A%0A
     We have an urgent blood donation request for your blood group (${bloodGroup}).%0A
@@ -106,19 +112,5 @@ function sendMessage(event, phone, email, name, bloodGroup, location) {
     window.open(emailLink, '_blank');
 }
 
-// Modify the function to include the sendMessage feature
-function addUserCard(userData) {
-    var div = document.createElement("div");
-    div.setAttribute("class", "register-container");
-    div.innerHTML = `<h2>${userData.name}</h2>
-        <h5>${userData.email}</h5>
-        <h5>${userData.phone}</h5>
-        <h2>${userData.bloodGroup}</h2>
-        <h5>${userData.location}</h5>
-        <button onclick="sendMessage(event, '${userData.phone}', '${userData.email}', '${userData.name}', '${userData.bloodGroup}', '${userData.location}')">Send</button>
-        <button onclick="deleteDetails(event, '${userData.phone}')">Delete</button>`;
-    container.append(div);
-}
-
 // Load stored users when the page loads
-window.onload = loadFromLocalStorage
+window.onload = loadFromLocalStorage;

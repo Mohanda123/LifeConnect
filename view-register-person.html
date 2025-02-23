@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifeConnect - Real-Time Alerts</title>
+    <title>LifeConnect - View Register-Person</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
 </head>
 <body>
     <!-- Navbar -->
@@ -25,33 +22,37 @@
             <li><a href="#" class="btn-login">Login</a></li>
         </ul>
     </nav>
+
     <div class="container">
+        <!-- Example User Card -->
         <div class="register-container">
-        <h2>Mohan</h2>
-        <h5>mohanmanivannan123@gmail.com</h5>
-        <h5>9597256330</h5>
-        <h2>A+</h2>
-        <h5>Dharmapuri,tamilnadu</h5>
-        <button onclick="sendMessage(event)">Send</button>
-        <button onclick="deletedetails(event)">delete</button>
+            <h2>Mohan</h2>
+            <h5>mohanmanivannan123@gmail.com</h5>
+            <h5>9597256330</h5>
+            <h2>A+</h2>
+            <h5>Dharmapuri, Tamil Nadu</h5>
+            <button onclick="sendMessage(event, '9597256330', 'mohanmanivannan123@gmail.com', 'Mohan', 'A+', 'Dharmapuri')">Send</button>
+            <button onclick="deleteDetails(event, '9597256330')">Delete</button>
         </div>
     </div>
-    
-    <div class="popup-overlay">
-    </div>
+
+    <!-- Popup for Adding Details -->
+    <div class="popup-overlay"></div>
     <div class="popup-box">
         <h2>Add Details</h2>
-        <form >
+        <form>
             <input type="text" placeholder="Name" id="name-input">
-            <input type="text" placeholder="Email ID" id="email-input">
+            <input type="email" placeholder="Email ID" id="email-input">
             <input type="tel" placeholder="Phone Number" id="phonenumber-input">
             <input type="text" placeholder="Blood Group" id="bloodgroup-input">
             <input type="text" placeholder="Location" id="location-input">
-            <button id="add-details">ADD</button>
-            <button id="cancel-popup">Cancel</button>
+            <button type="button" id="add-details">ADD</button>
+            <button type="button" id="cancel-popup">Cancel</button>
         </form>
     </div>
     <button class="add-button" id="add-popup-button">+</button>
+
+    <!-- Chatbot Icon -->
     <a href="MediSync/indexs.html" class="chatbot-icon">
         <i class="fas fa-house-medical"></i>
     </a>
@@ -66,6 +67,7 @@
         </div>
     </footer>
 
+    <!-- External JavaScript -->
     <script src="apps.js"></script>
 </body>
 </html>
