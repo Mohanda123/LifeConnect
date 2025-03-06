@@ -53,6 +53,8 @@ addDetails.addEventListener("click", function (event) {
 function addUserCard(userData) {
     var div = document.createElement("div");
     div.setAttribute("class", "register-container");
+    div.setAttribute("data-bloodgroup", userData.bloodGroup.toUpperCase()); // Store blood group in a custom attribute
+
     div.innerHTML = `
         <h2>${userData.name}</h2>
         <h5>${userData.email}</h5>
@@ -64,6 +66,23 @@ function addUserCard(userData) {
     `;
     container.append(div);
 }
+
+// Function to Filter Blood Group
+function filterBloodGroup() {
+    var input = document.getElementById("search-bar").value.toUpperCase().trim();
+    var userCards = document.querySelectorAll(".register-container");
+
+    userCards.forEach(card => {
+        var bloodGroup = card.getAttribute("data-bloodgroup"); // Get blood group from data attribute
+        if (bloodGroup && (bloodGroup === input || input === "")) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
+
 
 // Save Details to Local Storage
 function saveToLocalStorage(userData) {

@@ -333,6 +333,21 @@ footer {
 .register-container h2{
     color: aqua;
 }
+.searchbar{
+    
+    width: 100%;
+    max-width: 200px;
+    padding: 10px;
+    border: 2px solid #00FFFF; /* Aqua border */
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+.searchbar::placeholder{
+    color: #aaa;
+}
 .register-container button{
     background-color: #00ffff;
     color: black;
