@@ -22,13 +22,35 @@
             <li><a href="#" class="btn-login">Login</a></li>
         </ul>
     </nav>
-
-
-    <div class="searchbar">
-        <input type="text" id="search-bar" onkeyup="filterBloodGroup()" placeholder="Search Blood Group...">
-        &nbsp;
-        <i class="fa-solid fa-magnifying-glass" style="color: aqua;"></i>
+    <div class="search-bar">
+        <div class="searchbar">
+            <input type="text" id="search-bar" placeholder="Search Blood Group..." onkeyup="searchBloodGroup()">&nbsp;
+            <i class="fa-solid fa-magnifying-glass" style="color: aqua;"></i>
+            
+        </div>
+        <button  class="mapbutton"id="map-button" onclick="showAllLocations()">Show All on Map</button>
     </div>
+
+<!-- Google Map Container -->
+<div id="map"></div>
+<script>
+    function initMap() {
+        console.log("Google Maps API Loaded!");  // Debugging log
+        var map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 0, lng: 0 },  // Default center
+            zoom: 2,
+        });
+    }
+    function showmap(){
+        document.getElementById("map").style.display="block"
+    }
+</script>
+
+
+<!-- Include Google Maps API -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArOJTL-AzZn0DccnNpCu2YTNX_KRUyC4s&callback=initMap"></script>
+
+
 
 
     <div class="container">
@@ -64,6 +86,9 @@
     <a href="MediSync/indexs.html" class="chatbot-icon">
         <i class="fas fa-house-medical"></i>
     </a>
+    <button class="map-button" onclick="showmap()">
+        <i class="fa-solid fa-map-location-dot"></i>
+    </button>
 
     <!-- Footer -->
     <footer>
