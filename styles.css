@@ -442,8 +442,16 @@ footer {
         left: 10%;
         top: 10%;
     }
+    #map {
+        width: 550px;
+        height: 800px;
+        margin-top: 20px;
+        border-radius: 10px;
+        border: 10px solid #00FFFF;
+        display: none;
    
    
+}
 }
 
 @media screen and (max-width: 480px) {

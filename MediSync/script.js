@@ -1,244 +1,151 @@
-const btn = document.querySelector('.talk');
-const stopBtn = document.querySelector('.stop');
-const content = document.querySelector('.content');
-const chatBox = document.getElementById("chat-box");
-const chatInput = document.getElementById("chat-input");
-const sendButton = document.getElementById("send-button");
 
-// Initialize Speech Synthesis
-function speak(text) {
-    const text_speak = new SpeechSynthesisUtterance(text);
-    text_speak.rate = 1;
-    text_speak.volume = 1;
-    text_speak.pitch = 0.9;
+class MedicalChatbot {
+    constructor() {
+        this.knowledgeBase = {}; // Stores medical conditions data
+        this.loadData(); // Load medical conditions dynamically
 
-    let voices = window.speechSynthesis.getVoices();
-    let selectedVoice = voices.find(voice => voice.name.toLowerCase().includes('male'));
-    
-    if (selectedVoice) {
-        text_speak.voice = selectedVoice;
+        this.intentPatterns = {
+            symptoms: [/what are the symptoms of (.+)/i, /symptoms of (.+)/i],
+            treatment: [/how to treat (.+)/i, /treatment for (.+)/i, /treatment of (.+)/i],
+            disease_lookup: [/which diseases have (.+)/i, /what disease causes (.+)/i]
+        };
     }
 
-    window.speechSynthesis.speak(text_speak);
+    async loadData() {
+        try {
+            const response = await fetch("conditions_real_names_clean.json"); // Ensure correct path
+            this.knowledgeBase = await response.json();
+            console.log("✅ Medical Data Loaded:", this.knowledgeBase);
+        } catch (error) {
+            console.error("❌ Error loading medical data:", error);
+        }
+    }
+
+    processQuery(userInput) {
+        console.log("📝 User Input:", userInput);
+
+        for (const [intent, patterns] of Object.entries(this.intentPatterns)) {
+            for (const pattern of patterns) {
+                const match = userInput.match(pattern);
+                console.log("🔍 Checking Pattern:", pattern, "➡ Match:", match);
+
+                if (match) {
+                    let entity = match[1].replace(/[^\w\s]|_/g, "").trim().toLowerCase(); // Clean and normalize entity
+                    console.log("🎯 Matched Intent:", intent, "💡 Entity:", entity);
+
+                    if (intent === "disease_lookup") {
+                        return this.findDiseaseBySymptom(entity);
+                    }
+
+                    return this.generateResponse(intent, entity);
+                }
+            }
+        }
+
+        return { message: "I'm not sure I understand. Please ask about symptoms or treatments.", type: "fallback" };
+    }
+
+    generateResponse(intent, entity) {
+        console.log("🔎 Searching for:", entity);
+
+        // Convert JSON keys to lowercase for matching
+        const diseaseKey = Object.keys(this.knowledgeBase).find(
+            key => key.toLowerCase() === entity.toLowerCase()
+        );
+
+        if (diseaseKey) {
+            const condition = this.knowledgeBase[diseaseKey];
+
+            if (intent === "symptoms") {
+                return {
+                    message: `🩺 **Symptoms of ${diseaseKey}:**\n📌 ${condition.symptoms.join(", ")}`,
+                    type: "symptoms"
+                };
+            } else if (intent === "treatment") {
+                return {
+                    message: `💊 **Treatment for ${diseaseKey}:**\n\n🩺 **Medicines:** ${condition.medicine || "No specific medicine listed."}\n📌 **General Advice:** ${condition.generalAdvice || "Follow a healthy lifestyle and consult a doctor."}`,
+                    type: "treatment"
+                };
+            }
+        }
+
+        return { message: "I don't have information on that condition. Please consult a healthcare provider.", type: "not_found" };
+    }
+
+    findDiseaseBySymptom(symptom) {
+        console.log("🔎 Searching for diseases with symptom:", symptom);
+
+        let matchingDiseases = [];
+
+        for (const [disease, details] of Object.entries(this.knowledgeBase)) {
+            console.log(`➡ Checking ${disease}:`, details.symptoms); // Debugging log
+
+            for (let s of details.symptoms) {
+                if (s.toLowerCase().trim() === symptom.toLowerCase().trim()) {
+                    matchingDiseases.push(disease);
+                    break;
+                }
+            }
+        }
+
+        console.log("📋 Found Diseases:", matchingDiseases); // Log found diseases
+
+        if (matchingDiseases.length > 0) {
+            let responseMessage = `🔍 **The symptom '${symptom}' is associated with:**\n\n`;
+            matchingDiseases.forEach((disease, index) => {
+                responseMessage += `✅ ${index + 1}. ${disease.charAt(0).toUpperCase() + disease.slice(1)}\n`;
+            });
+
+            console.log("📝 Response Sent to Chat:", responseMessage); // Final Debugging Log
+
+            return {
+                message: responseMessage.trim(),
+                type: "reverse_lookup"
+            };
+        }
+
+        return { message: `No diseases found with the symptom '${symptom}'. Please consult a doctor.`, type: "not_found" };
+    }
 }
 
-// Greet the user based on time
-function wishMe() {
-    const hour = new Date().getHours();
-    if (hour >= 0 && hour < 12) speak("Good Morning ...");
-    else if (hour >= 12 && hour < 17) speak("Good Afternoon ...");
-    else speak("Good Evening ...");
-}
+// ✅ Initialize Chatbot
+const chatbot = new MedicalChatbot();
 
-// Load voices and initialize
-window.addEventListener('load', () => {
-    window.speechSynthesis.onvoiceschanged = () => {
-        console.log("Available Voices:", window.speechSynthesis.getVoices());
-        speak("Initializing MediSync ...");
-        wishMe();
-    };
+// ✅ Handle user input from chat form
+document.getElementById("chat-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const userInput = document.getElementById("user-input").value.trim();
+
+    if (!userInput) return;
+
+    appendMessage("You", userInput);
+
+    const response = chatbot.processQuery(userInput);
+    appendMessage("MediSync", response.message);
+
+    document.getElementById("user-input").value = ""; // Clear input field
 });
 
-// Initialize Speech Recognition
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-
-recognition.onresult = (event) => {
-    const transcript = event.results[event.resultIndex][0].transcript;
-    content.textContent = transcript;
-    takeCommand(transcript.toLowerCase());
-};
-
-// Start listening
-if (btn) {
-    btn.addEventListener('click', () => {
-        content.textContent = "Listening...";
-        try {
-            recognition.start();
-        } catch (error) {
-            console.error("Speech Recognition Error:", error);
-            content.textContent = "Error: Speech recognition not supported or permission denied.";
-        }
-    });
-}
-
-// Stop listening and speaking
-if (stopBtn) {
-    stopBtn.addEventListener('click', () => {
-        stopRecognition();
-        stopSpeech();
-    });
-}
-
-function stopRecognition() {
-    recognition.stop();
-    content.textContent = "Stopped listening.";
-}
-
-function stopSpeech() {
-    window.speechSynthesis.cancel();
-    content.textContent = "Speech stopped.";
-}
-
-// Process user commands
-function takeCommand(message) {
-    console.log("User Command:", message);
-
-    if (message.includes('hello') || message.includes('hi')) {
-        speak("Hello , How may I help you?");
-    } 
-    else if (message.includes('bye') || message.includes('ok bye')){
-        speak("See you, friend...I leave the rest...To you..");
-    } 
-    else if (message.includes('time')) {
-        const time = new Date().toLocaleTimeString();
-        const response = `The current time is ${time}.`;
-        speak(response);
-        appendMessage("Sushi", response);
-    } 
-    else if (message.includes('date')) {
-        const date = new Date().toDateString();
-        const response = `Today's date is ${date}.`;
-        speak(response);
-        appendMessage("Sushi", response);
-    } 
-    else if (message.includes('calculator')) {
-        const expression = message.replace('calculator', '').trim();
-        if (expression) {
-            try {
-                const result = evaluateExpression(expression);
-                speak(`The result is ${result}`);
-                appendMessage("Sushi", `The result is ${result}`);
-            } catch (error) {
-                speak("Sorry, I couldn't evaluate that expression.");
-                appendMessage("Sushi", "Sorry, I couldn't evaluate that expression.");
-            }
-        } else {
-            speak("Please provide an expression to calculate.");
-            appendMessage("Sushi", "Please provide an expression to calculate.");
-        }
-    } 
-    else if (message.includes('open youtube')) {
-        window.open("https://youtube.com", "_blank");
-        speak("Opening YouTube...");
-    } 
-    else if (message.includes('open whatsapp')) {
-        window.open("https://web.whatsapp.com", "_blank");
-        speak("Opening WhatsApp...");
-    } 
-    else if (message.includes('open spotify')) {
-        window.open("https://open.spotify.com", "_blank");
-        speak("Opening Spotify...");
-    } 
-    else if (message.includes('open instagram')) {
-        window.open("https://www.instagram.com", "_blank");
-        speak("Opening Instagram...");
-    } 
-    else if (message.includes('wikipedia') || message.includes('what is') || message.includes('who is') || message.includes('define')) {
-        const topic = message.replace(/wikipedia|what is|who is|define/g, "").trim();
-        if (topic) {
-            searchWikipedia(topic);
-        } else {
-            speak("Please specify a topic.");
-        }
-    } 
-    else if (message.includes('search google for') || message.includes('why') || message.includes('how') || message.includes('which')) {
-        const query = message.replace('search google for', '').trim();
-        if (query) {
-            searchGoogle(query);
-        } else {
-            speak("Please specify what you want to search for.");
-        }
-    } 
-    else {
-        speak("I'm not sure about that. Can you ask something else?");
-    }
-}
-
-// Handle chat input
-if (sendButton) {
-    sendButton.addEventListener("click", handleChatInput);
-}
-if (chatInput) {
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") handleChatInput();
-    });
-}
-
-function handleChatInput() {
-    const userMessage = chatInput.value.trim();
-    if (!userMessage) return;
-
-    appendMessage("You", userMessage);
-    processChat(userMessage);
-    chatInput.value = "";
-}
-
+// ✅ Append message to chat box
 function appendMessage(sender, message) {
+    const chatBox = document.getElementById("chat-messages");
     const messageElement = document.createElement("div");
-    messageElement.textContent = `${sender}: ${message}`;
+    messageElement.classList.add("message", sender === "You" ? "user" : "bot");
+    messageElement.innerHTML = `<strong>${sender}:</strong><br>${message.replace(/\n/g, "<br>")}`; // Supports line breaks
     chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
 }
 
-function processChat(message) {
-    takeCommand(message.toLowerCase());
-}
-
-// Search Wikipedia
-function searchWikipedia(query) {
-    const apiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
-    
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) throw new Error("Wikipedia API Error");
-            return response.json();
-        })
-        .then(data => {
-            if (data.extract) {
-                const result = data.extract;
-                speak(result);
-                appendMessage("Sushi", result);
-            } else {
-                speak("I couldn't find anything on Wikipedia.");
-            }
-        })
-        .catch(error => {
-            console.error("Wikipedia API Error:", error);
-            speak("Sorry, I couldn't fetch the information.");
-        });
-}
-
-// Evaluate math expressions
-function evaluateExpression(expression) {
+// ✅ Debugging: Fetch JSON Manually from Console
+async function testJsonFetch() {
     try {
-        return math.evaluate(expression); // Using math.js library
-    } catch (error) {
-        console.error("Invalid Expression:", expression);
-        return "Invalid expression";
-    }
-}
-
-// Search Google
-async function searchGoogle(query) {
-    const apiKey = "AIzaSyArOJTL-AzZn0DccnNpCu2YTNX_KRUyC4s"; // Replace with your API key
-    const cx = "052ccd7cfb6dc4fa1"; // Replace with your CX
-    const searchUrl = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cx}`;
-
-    try {
-        const response = await fetch(searchUrl);
+        const response = await fetch("conditions_real_names_clean.json"); // Corrected path
         const data = await response.json();
-
-        if (data.items && data.items.length > 0) {
-            const firstResult = data.items[0]; 
-            const resultMessage = `${firstResult.title}\n${firstResult.snippet}\nRead more: ${firstResult.link}`;
-            speak(resultMessage);
-            appendMessage("Sushi", resultMessage);
-        } else {
-            speak("No results found.");
-        }
+        console.log("🔬 Testing JSON Fetch:", data);
     } catch (error) {
-        console.error("Google API Error:", error);
-        speak("Error fetching search results.");
+        console.error("❌ JSON Fetch Error:", error);
     }
 }
+
+// Uncomment to run this test when the page loads
+// testJsonFetch();
