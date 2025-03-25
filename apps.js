@@ -1,18 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCK632sGWcK8ST3w1TN32sGUczYREXFf5Q",
-    authDomain: "lifeconnect-a611e.firebaseapp.com",
-    databaseURL: "https://lifeconnect-a611e-default-rtdb.firebaseio.com",
-    projectId: "lifeconnect-a611e",
-    storageBucket: "lifeconnect-a611e.firebasestorage.app",
-    messagingSenderId: "896940650924",
-    appId: "1:896940650924:web:be57185b8b5fe3a0bbca09"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
 
 // Popup Functionality
 var popupOverlay = document.querySelector(".popup-overlay");
@@ -82,8 +67,7 @@ addDetails.addEventListener("click", async function (event) {
             console.error("❌ Error in geocoding:", error);
         }
     }
-
-    saveToFirebase(userData); // Save to Firebase
+    saveToLocalStorage(userData);
     addUserCard(userData);
     popupOverlay.style.display = "none";
     popupBox.style.display = "none";
@@ -235,6 +219,8 @@ async function showAllLocations() {
 
     map.fitBounds(bounds);
 }
+// Global array to store markers
+var markers = [];
 
 // Function to Add Marker and Link to Donor Card
 function addMarkerToMap(location, userData) {
@@ -244,8 +230,8 @@ function addMarkerToMap(location, userData) {
     }
 
     console.log("📍 Adding Marker for:", userData.location, "at", location);
-
-    var marker = new google.maps.Marker({
+  
+    var marker = new google.maps.marker.AdvancedMarkerElement({
         position: location,
         map: map,
         title: userData.name,
@@ -254,7 +240,7 @@ function addMarkerToMap(location, userData) {
     markers.push({ marker: marker, userData: userData });
 
     // ✅ Click Event for Marker
-    marker.addListener("click", function () {
+    marker.addEventListener("click", function () {
         console.log("📌 Marker Clicked:", userData.location);
         showDonorCard(userData.location);
     });
@@ -300,38 +286,27 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Save to Local Storage
+function saveToLocalStorage(userData) {
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+    users.push(userData);
+    localStorage.setItem("users", JSON.stringify(users));
 // Save to Firebase
-function saveToFirebase(userData) {
-    const usersRef = database.ref('users');
-    usersRef.push(userData)
-        .then(() => {
-            console.log("User data saved to Firebase.");
-        })
-        .catch((error) => {
-            console.error("Error saving user data to Firebase:", error);
-        });
 }
+// Load from Local Storage
+function loadFromLocalStorage() {
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+    users.forEach(user => addUserCard(user));
 
-// Load from Firebase
-function loadFromFirebase() {
-    const usersRef = database.ref('users');
-    usersRef.on('value', (snapshot) => {
-        const users = snapshot.val();
-        if (users) {
-            Object.values(users).forEach(user => addUserCard(user));
-        }
-    });
 }
 
 // Delete User Details
 function deleteDetails(event, phone) {
     event.target.parentElement.remove();
-    const usersRef = database.ref('users');
-    usersRef.orderByChild('phone').equalTo(phone).once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            childSnapshot.ref.remove();
-        });
-    });
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+    users = users.filter(user => user.phone !== phone);
+    localStorage.setItem("users", JSON.stringify(users));
+   
 }
 
 // Send WhatsApp & Email Messages
@@ -355,6 +330,5 @@ function sendMessage(event, phone, email, name, bloodGroup, location) {
     var emailLink = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
     window.open(emailLink, '_blank');
 }
+window.onload = loadFromLocalStorage;
 
-// Load stored users
-window.onload = loadFromFirebase;
