@@ -383,6 +383,17 @@ footer {
     font-size: 16px;
     outline: none;
 }
+.hospital_button{
+    width: 100%;
+    max-width: 200px;
+    padding: 10px;
+    border: 2px solid #00FFFF; /* Aqua border */
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
 .searchbar::placeholder{
     color: #aaa;
 }

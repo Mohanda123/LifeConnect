@@ -1,0 +1,175 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+a {
+    color: #00ffff;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #00b3b3;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background-color: #1a1a1a;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo i {
+    color: #00ffff;
+    margin-right: 10px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.nav-links li {
+    margin-left: 20px;
+}
+
+.nav-links a {
+    font-size: 16px;
+}
+
+.btn-login {
+    background-color: #00ffff;
+    color: #121212;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+.btn-login:hover {
+    background-color: #00b3b3;
+}
+
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 500px;
+    margin: auto;
+    background: #1f1f1f;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+    margin-top: 100px;
+    margin-bottom: 100px;
+}
+
+/* Form Styles */
+input, button {
+    display: block;
+    width: 90%;
+    margin: 10px auto;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+input {
+    background: #2c2c2c;
+    color: white;
+}
+
+button {
+    background: aqua;
+    color: black;
+    cursor: pointer;
+}
+
+/* Donor List */
+#donorList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.donor-card {
+    background: #2c2c2c;
+    padding: 10px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 300px;
+    text-align: left;
+    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.1);
+}
+/* Chatbot Icon */
+.chatbot-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #00ffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+.chatbot-icon i {
+    font-size: 28px;
+    color: #121212;
+}
+
+.chatbot-icon:hover {
+    transform: scale(1.1);
+    background-color: #00b3b3;
+}
+/* Footer */
+footer {
+    background-color: #1a1a1a;
+    padding: 20px;
+    text-align: center;
+}
+
+.social-links {
+    margin-top: 10px;
+}
+
+.social-links a {
+    margin: 0 10px;
+    font-size: 20px;
+}
+
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+    
+    .donor-card {
+        width: 100%;
+    }
+}
