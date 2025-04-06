@@ -168,10 +168,6 @@
                 card.style.display = location.includes(searchValue) ? "block" : "none";
                 matchFound ||= location.includes(searchValue);
             });
-
-            if (!matchFound) {
-                alert("No hospitals found in this location.");
-            }
         }
 
         function saveToLocalStorage(hospitalData) {
