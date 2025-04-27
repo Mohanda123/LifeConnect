@@ -5,10 +5,10 @@ const hospitals = [
     { name: "Madurai Meenakshi Mission Hospital", email: "info@mmhrc.in", city: "Madurai" }
 ];
 
-// Load donors from local storage
+// Load donors from local storage when page loads
 document.addEventListener("DOMContentLoaded", loadDonors);
 
-// Handle form submission
+// Handle form submission (adding new donor)
 document.getElementById("donorForm").addEventListener("submit", function (e) {
     e.preventDefault();
     
@@ -31,25 +31,46 @@ document.getElementById("donorForm").addEventListener("submit", function (e) {
     document.getElementById("donorForm").reset();
 });
 
-// Display donors in container format
+// Display donors in card format
 function displayDonors() {
     const donorList = document.getElementById("donorList");
     donorList.innerHTML = ""; // Clear previous entries
     let donors = JSON.parse(localStorage.getItem("donors")) || [];
-    
-    donors.forEach(donor => {
+
+    donors.forEach((donor, index) => {
         const donorCard = document.createElement("div");
         donorCard.classList.add("donor-card");
         donorCard.innerHTML = `
             <strong>${donor.name}</strong><br>
             Age: ${donor.age} | Blood: ${donor.bloodGroup} <br>
-            Organs: ${donor.organs}
+            Organs: ${donor.organs} <br>
+            <button class="delete-btn" data-index="${index}">Delete</button>
         `;
         donorList.appendChild(donorCard);
     });
+
+    // Add click event to all delete buttons
+    const deleteButtons = document.querySelectorAll(".delete-btn");
+    deleteButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            let index = this.getAttribute("data-index");
+            deleteDonor(index);
+        });
+    });
 }
 
-// Load stored donors on page load
+// Delete donor by index
+function deleteDonor(index) {
+    let donors = JSON.parse(localStorage.getItem("donors")) || [];
+    
+    if (confirm("Are you sure you want to delete this donor?")) {
+        donors.splice(index, 1); // Remove 1 donor at that index
+        localStorage.setItem("donors", JSON.stringify(donors)); // Save updated list
+        displayDonors(); // Refresh list
+    }
+}
+
+// Load donors when page loads
 function loadDonors() {
     displayDonors();
 }

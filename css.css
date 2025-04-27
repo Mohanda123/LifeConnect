@@ -240,6 +240,17 @@ button {
     transition: transform 0.3s ease-in-out;
     text-decoration: none;
 }
+.delete-btn {
+    margin-top: 8px;
+    padding: 5px 10px;
+    background-color:aqua;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
 
 .chatbot-icon i {
     font-size: 28px;
